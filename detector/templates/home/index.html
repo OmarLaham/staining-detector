@@ -1,0 +1,51 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% comment %}{% block title %} Dashboard {% endblock %}{% endcomment %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+  <style>
+    .table thead th  {
+      text-transform: none;
+    }
+  </style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div id="upload-instructions" class="row">
+      <div class="col-12 mb-4 mt-4">
+        <h1>Welcome to <span class="text-secondary font-weight-bold">Stain Detector</span></h1>
+        <h4 class="p-2">..Neuro Staining Better Detected</h4>
+      </div>
+    </div>
+
+    <div class="py-4">
+      <h4 class="p-2">Upload area:</h4>
+      <span class="text-danger" style="font-weight: bold">Important: </span>If you upload wrong files you will be redirected to this form.
+      <div style="max-width: 400px; margin-top: 7px;">
+        <form action="{% url 'index_upload'%}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="input-img-file" class="form-label"><b>Input Image</b> file: (.jpg, .png)</label>
+            <input id="input-img-file" name="input-img-file" class="form-control" type="file">
+          </div>
+
+          <br />
+          <button type="submit" class="btn btn-primary">Upload and Start</button>
+        </form>
+      </div>
+    </div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <!-- page specific -->
+  <script src="/static/assets/js/pages/index.js"></script>
+
+{% endblock javascripts %}
