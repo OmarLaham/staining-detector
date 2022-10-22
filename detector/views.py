@@ -36,7 +36,7 @@ def util_is_number(value):
         raise Exception("The value you passed ({0}) is not a number.".format(value))
 
 
-def correct_background(source_img, patch_size, thresh_percent):
+def correct_background(source_img, patch_size, thresh_percent, staining_method=None):
 
     # convert source to numpy
     im = np.array(source_img)
@@ -70,17 +70,17 @@ def correct_background(source_img, patch_size, thresh_percent):
     #converto to RGB
     output_img = output_img.convert('RGB')
 
+    #let's handle different staining methods (colors)
     # Split into 3 channels
     r, g, b = output_img.split()
 
-    # remove Reds
-    r = r.point(lambda i: i * 0)
-
-    # keep Greens
-    g = g.point(lambda i: i)
-
-    # remove Blues
-    b = b.point(lambda i: i * 0)
+    if staining_method == "TH":
+        # remove Reds
+        r = r.point(lambda i: i * 0)
+        # keep Greens
+        g = g.point(lambda i: i)
+        # remove Blues
+        b = b.point(lambda i: i * 0)
 
     # Recombine back to RGB image
     output_img = Image.merge('RGB', (r, g, b))
@@ -142,15 +142,17 @@ def run(request, run_id):
     context["segment"] = run
 
     if request.POST:
+        print(request.POST)
         patch_size = int(request.POST["input-patch-size-range"])
         threshold_percent = int(request.POST["input-threshold-percent-range"])
+        staining_method = str(request.POST["input-staining-method-txt"])
 
         # important to avoid browser cash
         presentDate = datetime.datetime.now()
         timestamp = int(datetime.datetime.timestamp(presentDate) * 1000000)
 
         source_img = Image.open(path.join(settings.RUNS_DIR, run_id, "source_img.jpg")).convert("L")
-        output_img = correct_background(source_img, patch_size, threshold_percent)
+        output_img = correct_background(source_img, patch_size, threshold_percent, staining_method if staining_method != "..." else None)
 
         if not path.exists(path.join(settings.RUNS_DIR, run_id, "output")):
             os.makedirs(path.join(settings.RUNS_DIR, run_id, "output"))

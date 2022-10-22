@@ -66,6 +66,20 @@
               <div class="col-2">100%</div>
             </div>
             <!-- / Patch size range -->
+            <!-- Staining method -->
+            <label for="ddl-staining-method" class="form-label">Staining Method:</label>
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="btn-staining-method" data-bs-toggle="dropdown" aria-expanded="false">
+                Please Select:
+              </button>
+              <ul id="ddl-staining-method" class="dropdown-menu" aria-labelledby="ddl-staining-method">
+                <li><a class="dropdown-item" href="#" data-value="TH">TH</a></li>
+                <li><a class="dropdown-item" href="#" data-value="OTX2">OTX2</a></li>
+                <li><a class="dropdown-item" href="#" data-value="...">...</a></li>
+              </ul>
+            </div>
+            <input id="input-staining-method-txt" type="hidden" name="input-staining-method-txt" value="" />
+            <!-- /Staining method -->
             <br /><br />
             <button id="btn-apply" class="btn btn-small btn-primary">Apply</button>
           </div>
