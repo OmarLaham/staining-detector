@@ -67,6 +67,24 @@ def correct_background(source_img, patch_size, thresh_percent):
 
     output_img = Image.fromarray(im)
 
+    #converto to RGB
+    output_img = output_img.convert('RGB')
+
+    # Split into 3 channels
+    r, g, b = output_img.split()
+
+    # remove Reds
+    r = r.point(lambda i: i * 0)
+
+    # keep Greens
+    g = g.point(lambda i: i)
+
+    # remove Blues
+    b = b.point(lambda i: i * 0)
+
+    # Recombine back to RGB image
+    output_img = Image.merge('RGB', (r, g, b))
+
     return output_img
 
 
