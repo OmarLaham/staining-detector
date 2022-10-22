@@ -141,28 +141,72 @@ def run(request, run_id):
 
     context["segment"] = run
 
+    context["source_img_src"] = path.join(settings.RUNS_DIR, run_id, "source_img.jpg").split("staticfiles/")[1]
+    context["patch_size_1_default"] = 25
+    context["threshold_1_default"] = 50
+    context["staining_1_default"] = ""
+    context["patch_size_2_default"] = 25
+    context["threshold_2_default"] = 50
+    context["staining_2_default"] = ""
+
     if request.POST:
+
         print(request.POST)
-        patch_size = int(request.POST["input-patch-size-range"])
-        threshold_percent = int(request.POST["input-threshold-percent-range"])
-        staining_method = str(request.POST["input-staining-method-txt"])
 
         # important to avoid browser cash
         presentDate = datetime.datetime.now()
         timestamp = int(datetime.datetime.timestamp(presentDate) * 1000000)
 
+        #img_1
+        patch_size_1 = int(request.POST["input-patch-size-range-1"])
+        context["patch_size_1_default"] = patch_size_1
+        threshold_percent_1 = int(request.POST["input-threshold-percent-range-1"])
+        context["threshold_1_default"] = threshold_percent_1
+        staining_method_1 = str(request.POST["input-staining-method-txt-1"])
+        staining_method_1 = staining_method_1 if staining_method_1 != "" else None
+        context["staining_1_default"] = "" if staining_method_1 == None else staining_method_1
+
+        if staining_method_1 != None:
+            #correction img_1
+            source_img = Image.open(path.join(settings.RUNS_DIR, run_id, "source_img.jpg")).convert("L")
+            output_img_1 = correct_background(source_img, patch_size_1, threshold_percent_1, staining_method_1)
+
+            if not path.exists(path.join(settings.RUNS_DIR, run_id, "output")):
+                os.makedirs(path.join(settings.RUNS_DIR, run_id, "output"))
+
+            output_img_1_path = path.join(settings.RUNS_DIR, run_id, "output", "output_img_1_{0}.jpg".format(timestamp))
+            output_img_1_src = output_img_1_path
+            output_img_1.save(output_img_1_src)
+            context["correction_img_1_src"] = output_img_1_path.split("staticfiles/")[1]
+            context["correction_1_staining"] = staining_method_1
+
+        # img_2
+        patch_size_2 = int(request.POST["input-patch-size-range-2"])
+        context["patch_size_2_default"] = patch_size_2
+        threshold_percent_2 = int(request.POST["input-threshold-percent-range-2"])
+        context["threshold_2_default"] = threshold_percent_2
+        staining_method_2 = str(request.POST["input-staining-method-txt-2"])
+        staining_method_2 = staining_method_2 if staining_method_2 != "" else None
+        context["staining_2_default"] = "" if staining_method_2 == None else staining_method_2
+
+        # correction img_2
         source_img = Image.open(path.join(settings.RUNS_DIR, run_id, "source_img.jpg")).convert("L")
-        output_img = correct_background(source_img, patch_size, threshold_percent, staining_method if staining_method != "..." else None)
+        output_img_2 = correct_background(source_img, patch_size_2, threshold_percent_2, staining_method_2)
 
         if not path.exists(path.join(settings.RUNS_DIR, run_id, "output")):
             os.makedirs(path.join(settings.RUNS_DIR, run_id, "output"))
 
-        output_img_path = path.join(settings.RUNS_DIR, run_id, "output", "output_img_{0}.jpg".format(timestamp))
-        output_img_src = output_img_path
-        output_img.save(output_img_src)
-        context["correction_img_src"] = output_img_path.split("staticfiles/")[1]
+        output_img_2_path = path.join(settings.RUNS_DIR, run_id, "output", "output_img_2_{0}.jpg".format(timestamp))
+        output_img_2_src = output_img_2_path
+        output_img_2.save(output_img_2_src)
+        context["correction_img_2_src"] = output_img_2_path.split("staticfiles/")[1]
+        context["correction_2_staining"] = staining_method_2
 
-    context["source_img_src"] = path.join(settings.RUNS_DIR, run_id, "source_img.jpg").split("staticfiles/")[1]
+
+        #colocation
+        if staining_method_1 and staining_method_2:
+            #TODO: implement correct colocation
+            context["colocatoin_img_src"] = context["source_img_src"]
 
     #debugging
     #return JsonResponse(context)
