@@ -29,8 +29,13 @@
         <form action="{% url 'index_upload'%}" method="POST" enctype="multipart/form-data">
           {% csrf_token %}
           <div class="mb-3">
-            <label for="input-img-file" class="form-label"><b>Input Image</b> file: (.jpg, .png)</label>
-            <input id="input-img-file" name="input-img-file" class="form-control" type="file">
+            <label for="input-img-1-file" class="form-label"><b>Input Image 1</b> file: (.jpg, .png)</label>
+            <input id="input-img-1-file" name="input-img-1-file" class="form-control" type="file">
+          </div>
+
+          <div class="mb-3">
+            <label for="input-img-2-file" class="form-label"><b>Input Image 2</b> file: (.jpg, .png)</label>
+            <input id="input-img-2-file" name="input-img-2-file" class="form-control" type="file">
           </div>
 
           <br />

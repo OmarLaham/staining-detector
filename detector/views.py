@@ -61,6 +61,7 @@ def correct_background(source_img, patch_size, thresh_percent, staining_method=N
             thresh = thresh_percent * one_perc
 
             patch[patch < thresh] = 0
+            patch[patch < 100] = 0 # create transparent background from very low color intensity pixels regardless of user-set threshold
 
             # assign patch after thresholding
             im[x:x + patch_size, y:y + patch_size] = patch
@@ -74,11 +75,20 @@ def correct_background(source_img, patch_size, thresh_percent, staining_method=N
     # Split into 3 channels
     r, g, b = output_img.split()
 
+
     if staining_method == "TH":
         # remove Reds
         r = r.point(lambda i: i * 0)
         # keep Greens
         g = g.point(lambda i: i)
+        # remove Blues
+        b = b.point(lambda i: i * 0)
+
+    elif staining_method == "OTX2":
+        # remove Reds
+        r = r.point(lambda i: i)
+        # keep Greens
+        g = g.point(lambda i: i * 0)
         # remove Blues
         b = b.point(lambda i: i * 0)
 
@@ -111,24 +121,36 @@ def index_upload(request):
     os.makedirs(new_run_dir_path);
 
     try:
-        img_filename = request.FILES['input-img-file']
+        img_1_filename = request.FILES['input-img-1-file']
+        img_2_filename = request.FILES['input-img-2-file']
     except:
         return HttpResponseRedirect("/")
 
+    img_filenames = [
+        img_1_filename,
+        img_2_filename
+    ]
 
-    saving_filename = path.join(settings.RUNS_DIR, new_run_id, "source_img.jpg") #regardless of original extension
-    fout = open(saving_filename, 'wb+') #wb+ because chunks
+    for i in range(len(img_filenames)):
 
-    uploaded_file_content = ContentFile(img_filename.read())
+        img_filename = img_filenames[i]
 
-    try:
-        # Iterate through the chunks.
-        for chunk in uploaded_file_content.chunks():
-            fout.write(chunk)
-        fout.close()
-    except:
-        print("Internal Error: Error while uploading files.")
-        return HttpResponseRedirect("/")
+        if not img_filename:
+            continue
+
+        saving_filename = path.join(settings.RUNS_DIR, new_run_id, "source_img_{0}.jpg".format(i + 1)) #regardless of original extension. start from 1, so we have 1 and 2
+        fout = open(saving_filename, 'wb+') #wb+ because chunks
+
+        uploaded_file_content = ContentFile(img_filename.read())
+
+        try:
+            # Iterate through the chunks.
+            for chunk in uploaded_file_content.chunks():
+                fout.write(chunk)
+            fout.close()
+        except:
+            print("Internal Error: Error while uploading files.")
+            return HttpResponseRedirect("/")
 
     return HttpResponseRedirect('/run/' + new_run_id)
 
@@ -141,10 +163,16 @@ def run(request, run_id):
 
     context["segment"] = run
 
-    context["source_img_src"] = path.join(settings.RUNS_DIR, run_id, "source_img.jpg").split("staticfiles/")[1]
+    source_img_1_src = path.join(settings.RUNS_DIR, run_id, "source_img_1.jpg")
+    if path.exists(source_img_1_src):
+        context["source_img_1_src"] = source_img_1_src.split("staticfiles/")[1]
     context["patch_size_1_default"] = 25
     context["threshold_1_default"] = 50
     context["staining_1_default"] = ""
+
+    source_img_2_src = path.join(settings.RUNS_DIR, run_id, "source_img_2.jpg")
+    if path.exists(source_img_2_src):
+        context["source_img_2_src"] = source_img_2_src.split("staticfiles/")[1]
     context["patch_size_2_default"] = 25
     context["threshold_2_default"] = 50
     context["staining_2_default"] = ""
@@ -168,15 +196,15 @@ def run(request, run_id):
 
         if staining_method_1 != None:
             #correction img_1
-            source_img = Image.open(path.join(settings.RUNS_DIR, run_id, "source_img.jpg")).convert("L")
-            output_img_1 = correct_background(source_img, patch_size_1, threshold_percent_1, staining_method_1)
+            source_img_1 = Image.open(path.join(settings.RUNS_DIR, run_id, "source_img_1.jpg")).convert("L")
+            output_img_1 = correct_background(source_img_1, patch_size_1, threshold_percent_1, staining_method_1)
 
             if not path.exists(path.join(settings.RUNS_DIR, run_id, "output")):
                 os.makedirs(path.join(settings.RUNS_DIR, run_id, "output"))
 
-            output_img_1_path = path.join(settings.RUNS_DIR, run_id, "output", "output_img_1_{0}.jpg".format(timestamp))
+            output_img_1_path = path.join(settings.RUNS_DIR, run_id, "output", "output_img_1_{0}.png".format(timestamp))
             output_img_1_src = output_img_1_path
-            output_img_1.save(output_img_1_src)
+            output_img_1.save(output_img_1_src, format="png")
             context["correction_img_1_src"] = output_img_1_path.split("staticfiles/")[1]
             context["correction_1_staining"] = staining_method_1
 
@@ -190,23 +218,52 @@ def run(request, run_id):
         context["staining_2_default"] = "" if staining_method_2 == None else staining_method_2
 
         # correction img_2
-        source_img = Image.open(path.join(settings.RUNS_DIR, run_id, "source_img.jpg")).convert("L")
-        output_img_2 = correct_background(source_img, patch_size_2, threshold_percent_2, staining_method_2)
+        source_img_2 = Image.open(path.join(settings.RUNS_DIR, run_id, "source_img_2.jpg")).convert("L")
+        output_img_2 = correct_background(source_img_2, patch_size_2, threshold_percent_2, staining_method_2)
 
         if not path.exists(path.join(settings.RUNS_DIR, run_id, "output")):
             os.makedirs(path.join(settings.RUNS_DIR, run_id, "output"))
 
-        output_img_2_path = path.join(settings.RUNS_DIR, run_id, "output", "output_img_2_{0}.jpg".format(timestamp))
+        output_img_2_path = path.join(settings.RUNS_DIR, run_id, "output", "output_img_2_{0}.png".format(timestamp))
         output_img_2_src = output_img_2_path
-        output_img_2.save(output_img_2_src)
+        output_img_2.save(output_img_2_src, format="png")
         context["correction_img_2_src"] = output_img_2_path.split("staticfiles/")[1]
         context["correction_2_staining"] = staining_method_2
 
 
         #colocation
         if staining_method_1 and staining_method_2:
-            #TODO: implement correct colocation
-            context["colocatoin_img_src"] = context["source_img_src"]
+            # calculate
+            im_colocation = np.zeros((output_img_1.height, output_img_1.width, 3))
+            colocation_n_pixels = 0
+            img_n_pixels = output_img_1.width * output_img_1.height
+
+            im_output_1 = np.array(output_img_1)
+            im_output_2 = np.array(output_img_2)
+
+            for y in range(im_colocation.shape[0]):
+                for x in range(im_colocation.shape[1]):
+
+                    if im_output_1[y, x].any() > 0 and im_output_2[y, x].any() > 0:
+                        colocation_n_pixels += 1
+
+                    #overlaying
+                    for z in range(im_colocation.shape[2]):
+                        # overlay pixels according to higher intensity
+                        im_colocation[y,x,z] = im_output_1[y,x,z] if im_output_1[y,x,z] > im_output_2[y,x,z] else im_output_2[y,x,z]
+
+            context["colocatoin_percent"] = int((100 * colocation_n_pixels) / img_n_pixels)
+
+            #save overlayed image
+            output_img_colocation = Image.fromarray((im_colocation * 225).astype(np.uint8))
+            #extension must be .png because of overlaying
+            output_img_colocation_path = path.join(settings.RUNS_DIR, run_id, "output", "output_img_collocation_{0}.png".format(timestamp))
+            output_img_colocation_src = output_img_colocation_path
+            output_img_colocation.save(output_img_colocation_src, format="png")
+            context["colocation_img_src"] = output_img_colocation_path.split("staticfiles/")[1]
+
+
+
 
     #debugging
     #return JsonResponse(context)

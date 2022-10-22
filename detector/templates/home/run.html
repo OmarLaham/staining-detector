@@ -35,106 +35,116 @@
         </div>
     </div>
     <div class="row">
-      <div class="col-12 mb-4 text-center">
+      <div class="col-12 mb-4">
         <h3 style="color: #ecb32c;">Original Image</h3>
-        <img class="w-25" src="{{ STATIC_URL }}{{ source_img_src }}" />
+        <br />
+        <div class="row">
+          <div class="col-4">
+            <h3 class="">Image I</h3>
+            <img class="w-75" src="{{ STATIC_URL }}{{ source_img_1_src }}" />
+          </div>
+          <div class="col-4">
+            <h3 class="">Image II</h3>
+            <img class="w-75" src="{{ STATIC_URL }}{{ source_img_2_src }}" />
+          </div>
+          <div class="col-4"></div>
+        </div>
       </div>
-      <br /><hr /><br />
+      <br /><br />
     </div>
 
     <form action="" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="row">
-        <h3 class="text-center text-secondary">Noise Correction Calibration</h3>
-          <div class="col-4 mb-4">
-            <h3 class="">Staining Method I</h3>
-            <div class="w-75">
-              <!-- Patch size range -->
-              <label for="input-patch-size-range-1" class="form-label">Patch size range:</label>
-              <div class="row">
-                <div class="col-2">10px</div>
-                <div class="col-8">
-                  <input name="input-patch-size-range-1" type="range" class="form-range" min="10" max="50" id="input-patch-size-range-1" value="{{ patch_size_1_default }}">
-                </div>
-                <div class="col-2">50px</div>
+        <h3 class="text-secondary mb-4">Noise Correction Calibration</h3>
+        <div class="col-4 mb-4">
+          <h3 class="">Staining for Image I</h3>
+          <div class="w-75">
+            <!-- Patch size range -->
+            <label for="input-patch-size-range-1" class="form-label">Patch size range:</label>
+            <div class="row">
+              <div class="col-2">10px</div>
+              <div class="col-8">
+                <input name="input-patch-size-range-1" type="range" class="form-range" min="10" max="50" id="input-patch-size-range-1" value="{{ patch_size_1_default }}">
               </div>
-              <!-- / Patch size range -->
-              <br />
-              <!-- Patch size range -->
-              <label for="input-patch-size-range-1" class="form-label">Threshold Percent %:</label>
-              <div class="row">
-                <div class="col-2">0%</div>
-                <div class="col-8">
-                  <input name="input-threshold-percent-range-1" type="range" class="form-range" min="0" max="100" id="input-threshold-percent-range-1" value="{{ threshold_1_default }}">
-                </div>
-                <div class="col-2">100%</div>
-              </div>
-              <!-- / Patch size range -->
-              <!-- Staining method -->
-              <label for="ddl-staining-method-1" class="form-label">Staining Method:</label>
-              <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle btn-staining-method" type="button" id="btn-staining-method-1" data-bs-toggle="dropdown" aria-expanded="false">
-                  {% if staining_1_default %}{{ staining_1_default }}{% else %}Please Select:{% endif %}
-                </button>
-                <ul id="ddl-staining-method-1" class="dropdown-menu ddl-staining-method" aria-labelledby="ddl-staining-method-1" data-input-field="input-staining-method-txt-1">
-                  <li><a class="dropdown-item" href="#" data-value="">--</a></li>
-                  <li><a class="dropdown-item" href="#" data-value="TH">TH</a></li>
-                  <li><a class="dropdown-item" href="#" data-value="OTX2">OTX2</a></li>
-                </ul>
-              </div>
-              <input class="input-staining-method-txt" id="input-staining-method-txt-1" type="hidden" name="input-staining-method-txt-1" value="{% if staining_1_default %}{{ staining_1_default }}{% endif %}" />
-              <!-- /Staining method -->
+              <div class="col-2">50px</div>
             </div>
-          </div>
-          <div class="col-4 mb-4">
-            <h3 class="">Staining Method II</h3>
-            <div class="w-75">
-              <!-- Patch size range -->
-              <label for="input-patch-size-range-2" class="form-label">Patch size range:</label>
-              <div class="row">
-                <div class="col-2">10px</div>
-                <div class="col-8">
-                  <input name="input-patch-size-range-2" type="range" class="form-range" min="10" max="50" id="input-patch-size-range-2" value="{{ patch_size_2_default }}">
-                </div>
-                <div class="col-2">50px</div>
+            <!-- / Patch size range -->
+            <br />
+            <!-- Patch size range -->
+            <label for="input-patch-size-range-1" class="form-label">Threshold Percent %:</label>
+            <div class="row">
+              <div class="col-2">0%</div>
+              <div class="col-8">
+                <input name="input-threshold-percent-range-1" type="range" class="form-range" min="0" max="100" id="input-threshold-percent-range-1" value="{{ threshold_1_default }}">
               </div>
-              <!-- / Patch size range -->
-              <br />
-              <!-- Patch size range -->
-              <label for="input-patch-size-range-2" class="form-label">Threshold Percent %:</label>
-              <div class="row">
-                <div class="col-2">0%</div>
-                <div class="col-8">
-                  <input name="input-threshold-percent-range-2" type="range" class="form-range" min="0" max="100" id="input-threshold-percent-range-2" value="{{ threshold_2_default }}">
-                </div>
-                <div class="col-2">100%</div>
-              </div>
-              <!-- / Patch size range -->
-              <!-- Staining method -->
-              <label for="ddl-staining-method-2" class="form-label">Staining Method:</label>
-              <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle btn-staining-method" type="button" id="btn-staining-method-2" data-bs-toggle="dropdown" aria-expanded="false">
-                  {% if staining_2_default %}{{ staining_2_default }}{% else %}Please Select:{% endif %}
-                </button>
-                <ul id="ddl-staining-method-2" class="dropdown-menu ddl-staining-method" aria-labelledby="ddl-staining-method-2" data-input-field="input-staining-method-txt-2">
-                  <li><a class="dropdown-item" href="#" data-value="">--</a></li>
-                  <li><a class="dropdown-item" href="#" data-value="TH">TH</a></li>
-                  <li><a class="dropdown-item" href="#" data-value="OTX2">OTX2</a></li>
-                </ul>
-              </div>
-              <input class="input-staining-method-txt" id="input-staining-method-txt-2" type="hidden" name="input-staining-method-txt-2" value="{% if staining_2_default %}{{ staining_2_default }}{% endif %}" />
-              <!-- /Staining method -->
+              <div class="col-2">100%</div>
             </div>
+            <!-- / Patch size range -->
+            <!-- Staining method -->
+            <label for="ddl-staining-method-1" class="form-label">Staining Method:</label>
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle btn-staining-method" type="button" id="btn-staining-method-1" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if staining_1_default %}{{ staining_1_default }}{% else %}Please Select:{% endif %}
+              </button>
+              <ul id="ddl-staining-method-1" class="dropdown-menu ddl-staining-method" aria-labelledby="ddl-staining-method-1" data-input-field="input-staining-method-txt-1">
+                <li><a class="dropdown-item" href="#" data-value="">--</a></li>
+                <li><a class="dropdown-item" href="#" data-value="TH">TH</a></li>
+                <li><a class="dropdown-item" href="#" data-value="OTX2">OTX2</a></li>
+              </ul>
+            </div>
+            <input class="input-staining-method-txt" id="input-staining-method-txt-1" type="hidden" name="input-staining-method-txt-1" value="{% if staining_1_default %}{{ staining_1_default }}{% endif %}" />
+            <!-- /Staining method -->
           </div>
-          <div class="col-4">
-            <h3>Colocation Settings..</h3>
+        </div>
+        <div class="col-4 mb-4">
+          <h3 class="">Staining for Image II</h3>
+          <div class="w-75">
+            <!-- Patch size range -->
+            <label for="input-patch-size-range-2" class="form-label">Patch size range:</label>
+            <div class="row">
+              <div class="col-2">10px</div>
+              <div class="col-8">
+                <input name="input-patch-size-range-2" type="range" class="form-range" min="10" max="50" id="input-patch-size-range-2" value="{{ patch_size_2_default }}">
+              </div>
+              <div class="col-2">50px</div>
+            </div>
+            <!-- / Patch size range -->
+            <br />
+            <!-- Patch size range -->
+            <label for="input-patch-size-range-2" class="form-label">Threshold Percent %:</label>
+            <div class="row">
+              <div class="col-2">0%</div>
+              <div class="col-8">
+                <input name="input-threshold-percent-range-2" type="range" class="form-range" min="0" max="100" id="input-threshold-percent-range-2" value="{{ threshold_2_default }}">
+              </div>
+              <div class="col-2">100%</div>
+            </div>
+            <!-- / Patch size range -->
+            <!-- Staining method -->
+            <label for="ddl-staining-method-2" class="form-label">Staining Method:</label>
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle btn-staining-method" type="button" id="btn-staining-method-2" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if staining_2_default %}{{ staining_2_default }}{% else %}Please Select:{% endif %}
+              </button>
+              <ul id="ddl-staining-method-2" class="dropdown-menu ddl-staining-method" aria-labelledby="ddl-staining-method-2" data-input-field="input-staining-method-txt-2">
+                <li><a class="dropdown-item" href="#" data-value="">--</a></li>
+                <li><a class="dropdown-item" href="#" data-value="TH">TH</a></li>
+                <li><a class="dropdown-item" href="#" data-value="OTX2">OTX2</a></li>
+              </ul>
+            </div>
+            <input class="input-staining-method-txt" id="input-staining-method-txt-2" type="hidden" name="input-staining-method-txt-2" value="{% if staining_2_default %}{{ staining_2_default }}{% endif %}" />
+            <!-- /Staining method -->
           </div>
-          <br /><br />
-          <div class="text-center">
-            <button id="btn-apply" class="btn btn-small btn-info w-10">Apply</button>
-            <br /><br /><br />
-          </div>
-
+        </div>
+        <div class="col-4">
+          <h3>Colocation Settings..</h3>
+        </div>
+        <br /><br />
+        <div class="text-center">
+          <button id="btn-apply" class="btn btn-small btn-info w-10">Apply</button>
+          <br /><br /><br />
+        </div>
         </div>
       </div>
     </form>
@@ -160,6 +170,8 @@
           {% if correction_1_staining and correction_2_staining %}
             <h4 class="text-secondary">Colocation</h4>
             <img class="w-75" src="{{ STATIC_URL }}{{ colocation_img_src }}" />
+            <br /><br />
+            <h5><strong>Colocation percent: </strong>{{ colocatoin_percent }}%</h5>
           {% endif %}
         </div>
       </div>
